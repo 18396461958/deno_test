@@ -1,12 +1,20 @@
-// 使用Deno内置的serve函数，这是当前推荐的方式
 const TARGET_HOST = "http://39.99.230.211";
 
-// 使用Deno.serve API (Deno 1.30+)
-Deno.serve({ port: 443 }, async (req: Request) => {
+Deno.serve({ port: 8000 }, async (req: Request) => {
 	const url = new URL(req.url);
 
+	// 判断路径，如果是/api开头的请求则代理到7777端口
+	let targetPort = 80; // 默认端口
+	let targetPath = url.pathname;
+
+	if (url.pathname.startsWith('/api')) {
+		targetPort = 7777;
+		// 如果想去掉/api前缀，可以取消下面的注释
+		// targetPath = url.pathname.replace(/^\/api/, '');
+	}
+
 	// 构建目标URL
-	const targetUrl = `${TARGET_HOST}${url.pathname}${url.search}`;
+	const targetUrl = `${TARGET_HOST}:${targetPort}${targetPath}${url.search}`;
 
 	// 复制并修改请求头
 	const headers = new Headers(req.headers);
@@ -45,3 +53,5 @@ Deno.serve({ port: 443 }, async (req: Request) => {
 });
 
 console.log("Proxy server running at http://localhost:8000");
+console.log("API requests (/api*) proxied to port 7777");
+console.log("Other requests proxied to default port");
