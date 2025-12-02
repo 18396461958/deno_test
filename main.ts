@@ -2,7 +2,7 @@
 const TARGET_HOST = "http://39.99.230.211";
 
 // 使用Deno.serve API (Deno 1.30+)
-Deno.serve({ port: 8000 }, async (req: Request) => {
+Deno.serve({ port: 443 }, async (req: Request) => {
 	const url = new URL(req.url);
 
 	// 构建目标URL
